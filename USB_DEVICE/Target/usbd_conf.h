@@ -9,9 +9,7 @@
 #include "stm32l0xx.h"
 #include "stm32l0xx_hal.h"
 
- extern PCD_HandleTypeDef hpcd_USB_FS;
-
-
+extern PCD_HandleTypeDef hpcd_USB_FS;
 
 #define USBD_MAX_NUM_INTERFACES     	1U
 #define USBD_MAX_NUM_CONFIGURATION     	1U
@@ -22,5 +20,4 @@
 #define DEVICE_FS 						0
 
 
-
-#endif /* __USBD_CONF__H__ */
+#endif

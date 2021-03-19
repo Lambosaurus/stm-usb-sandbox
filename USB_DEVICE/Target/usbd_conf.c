@@ -4,6 +4,7 @@
 #include "usbd_core.h"
 #include "usb/USB_CDC.h"
 #include "usb/USB_PCD.h"
+#include "usb/USB_EP.h"
 
 
 PCD_HandleTypeDef hpcd_USB_FS;
@@ -138,13 +139,13 @@ USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_a
 
 USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev, uint8_t ep_addr, uint8_t *pbuf, uint16_t size)
 {
-	USB_PCD_EP_StartTx(ep_addr, pbuf, size);
+	USB_EP_Tx(ep_addr, pbuf, size);
 	return USBD_OK;
 }
 
 USBD_StatusTypeDef USBD_LL_PrepareReceive(USBD_HandleTypeDef *pdev, uint8_t ep_addr, uint8_t *pbuf, uint16_t size)
 {
-	USB_PCD_EP_StartRx(ep_addr, pbuf, size);
+	USB_EP_Rx(ep_addr, pbuf, size);
 	return USBD_OK;
 }
 

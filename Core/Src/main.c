@@ -14,7 +14,6 @@ int main(void)
 
   while (1)
   {
-
 	uint32_t now = HAL_GetTick();
 
 	static uint32_t tide = 0;

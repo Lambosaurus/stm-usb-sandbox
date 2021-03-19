@@ -107,14 +107,14 @@ USBD_StatusTypeDef USBD_LL_FlushEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
 
 USBD_StatusTypeDef USBD_LL_StallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
 {
-  HAL_PCD_EP_SetStall(pdev->pData, ep_addr);
-  return USBD_OK;
+	USB_EP_Stall(ep_addr);
+	return USBD_OK;
 }
 
 USBD_StatusTypeDef USBD_LL_ClearStallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
 {
-  HAL_PCD_EP_ClrStall(pdev->pData, ep_addr);
-  return USBD_OK;
+	USB_EP_Destall(ep_addr);
+	return USBD_OK;
 }
 
 uint8_t USBD_LL_IsStallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)

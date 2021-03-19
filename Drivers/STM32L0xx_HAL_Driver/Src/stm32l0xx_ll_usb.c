@@ -39,6 +39,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l0xx_hal.h"
+#include "usb/USB_EP.h"
 
 /** @addtogroup STM32L0xx_LL_USB_DRIVER
   * @{
@@ -253,7 +254,7 @@ HAL_StatusTypeDef USB_EPStartXfer(USB_TypeDef *USBx, USB_EPTypeDef *ep)
     /* configure and validate Tx endpoint */
     if (ep->doublebuffer == 0U)
     {
-      USB_WritePMA(USBx, ep->xfer_buff, ep->pmaadress, (uint16_t)len);
+      USB_PMA_Write(ep->pmaadress, ep->xfer_buff, len);
       PCD_SET_EP_TX_CNT(USBx, ep->num, len);
     }
     else
@@ -277,7 +278,7 @@ HAL_StatusTypeDef USB_EPStartXfer(USB_TypeDef *USBx, USB_EPTypeDef *ep)
             pmabuffer = ep->pmaaddr1;
 
             /* Write the user buffer to USB PMA */
-            USB_WritePMA(USBx, ep->xfer_buff, pmabuffer, (uint16_t)len);
+            USB_PMA_Write(pmabuffer, ep->xfer_buff, (uint16_t)len);
             ep->xfer_buff += len;
 
             if (ep->xfer_len_db > ep->maxpacket)
@@ -295,7 +296,7 @@ HAL_StatusTypeDef USB_EPStartXfer(USB_TypeDef *USBx, USB_EPTypeDef *ep)
             pmabuffer = ep->pmaaddr0;
 
             /* Write the user buffer to USB PMA */
-            USB_WritePMA(USBx, ep->xfer_buff, pmabuffer, (uint16_t)len);
+            USB_PMA_Write(pmabuffer, ep->xfer_buff, len);
           }
           else
           {
@@ -304,7 +305,7 @@ HAL_StatusTypeDef USB_EPStartXfer(USB_TypeDef *USBx, USB_EPTypeDef *ep)
             pmabuffer = ep->pmaaddr0;
 
             /* Write the user buffer to USB PMA */
-            USB_WritePMA(USBx, ep->xfer_buff, pmabuffer, (uint16_t)len);
+            USB_PMA_Write(pmabuffer, ep->xfer_buff, len);
             ep->xfer_buff += len;
 
             if (ep->xfer_len_db > ep->maxpacket)
@@ -322,7 +323,7 @@ HAL_StatusTypeDef USB_EPStartXfer(USB_TypeDef *USBx, USB_EPTypeDef *ep)
             pmabuffer = ep->pmaaddr1;
 
             /* Write the user buffer to USB PMA */
-            USB_WritePMA(USBx, ep->xfer_buff, pmabuffer, (uint16_t)len);
+            USB_PMA_Write(pmabuffer, ep->xfer_buff, (uint16_t)len);
           }
         }
         /* auto Switch to single buffer mode when transfer <Mps no need to manage in double buffer */
@@ -338,7 +339,7 @@ HAL_StatusTypeDef USB_EPStartXfer(USB_TypeDef *USBx, USB_EPTypeDef *ep)
           pmabuffer = ep->pmaaddr0;
 
           /* Write the user buffer to USB PMA */
-          USB_WritePMA(USBx, ep->xfer_buff, pmabuffer, (uint16_t)len);
+          USB_PMA_Write(pmabuffer, ep->xfer_buff, (uint16_t)len);
         }
       }/* end if bulk double buffer */
 
@@ -359,7 +360,7 @@ HAL_StatusTypeDef USB_EPStartXfer(USB_TypeDef *USBx, USB_EPTypeDef *ep)
           pmabuffer = ep->pmaaddr0;
         }
 
-        USB_WritePMA(USBx, ep->xfer_buff, pmabuffer, (uint16_t)len);
+        USB_PMA_Write(pmabuffer, ep->xfer_buff, (uint16_t)len);
         PCD_FreeUserBuffer(USBx, ep->num, ep->is_in);
       }
     }
@@ -432,132 +433,6 @@ HAL_StatusTypeDef USB_EPStartXfer(USB_TypeDef *USBx, USB_EPTypeDef *ep)
   }
 
   return HAL_OK;
-}
-
-
-/**
-  * @brief  USB_EPSetStall set a stall condition over an EP
-  * @param  USBx Selected device
-  * @param  ep pointer to endpoint structure
-  * @retval HAL status
-  */
-HAL_StatusTypeDef USB_EPSetStall(USB_TypeDef *USBx, USB_EPTypeDef *ep)
-{
-  if (ep->is_in != 0U)
-  {
-    PCD_SET_EP_TX_STATUS(USBx, ep->num, USB_EP_TX_STALL);
-  }
-  else
-  {
-    PCD_SET_EP_RX_STATUS(USBx, ep->num, USB_EP_RX_STALL);
-  }
-
-  return HAL_OK;
-}
-
-/**
-  * @brief  USB_EPClearStall Clear a stall condition over an EP
-  * @param  USBx Selected device
-  * @param  ep pointer to endpoint structure
-  * @retval HAL status
-  */
-HAL_StatusTypeDef USB_EPClearStall(USB_TypeDef *USBx, USB_EPTypeDef *ep)
-{
-  if (ep->doublebuffer == 0U)
-  {
-    if (ep->is_in != 0U)
-    {
-      PCD_CLEAR_TX_DTOG(USBx, ep->num);
-
-      if (ep->type != EP_TYPE_ISOC)
-      {
-        /* Configure NAK status for the Endpoint */
-        PCD_SET_EP_TX_STATUS(USBx, ep->num, USB_EP_TX_NAK);
-      }
-    }
-    else
-    {
-      PCD_CLEAR_RX_DTOG(USBx, ep->num);
-
-      /* Configure VALID status for the Endpoint */
-      PCD_SET_EP_RX_STATUS(USBx, ep->num, USB_EP_RX_VALID);
-    }
-  }
-
-  return HAL_OK;
-}
-
-/**
-  * @brief Copy a buffer from user memory area to packet memory area (PMA)
-  * @param   USBx USB peripheral instance register address.
-  * @param   pbUsrBuf pointer to user memory area.
-  * @param   wPMABufAddr address into PMA.
-  * @param   wNBytes no. of bytes to be copied.
-  * @retval None
-  */
-void USB_WritePMA(USB_TypeDef *USBx, uint8_t *pbUsrBuf, uint16_t wPMABufAddr, uint16_t wNBytes)
-{
-  uint32_t n = ((uint32_t)wNBytes + 1U) >> 1;
-  uint32_t BaseAddr = (uint32_t)USBx;
-  uint32_t i, temp1, temp2;
-  __IO uint16_t *pdwVal;
-  uint8_t *pBuf = pbUsrBuf;
-
-  pdwVal = (__IO uint16_t *)(BaseAddr + 0x400U + ((uint32_t)wPMABufAddr * PMA_ACCESS));
-
-  for (i = n; i != 0U; i--)
-  {
-    temp1 = *pBuf;
-    pBuf++;
-    temp2 = temp1 | ((uint16_t)((uint16_t) *pBuf << 8));
-    *pdwVal = (uint16_t)temp2;
-    pdwVal++;
-
-#if PMA_ACCESS > 1U
-    pdwVal++;
-#endif
-
-    pBuf++;
-  }
-}
-
-/**
-  * @brief Copy data from packet memory area (PMA) to user memory buffer
-  * @param   USBx USB peripheral instance register address.
-  * @param   pbUsrBuf pointer to user memory area.
-  * @param   wPMABufAddr address into PMA.
-  * @param   wNBytes no. of bytes to be copied.
-  * @retval None
-  */
-void USB_ReadPMA(USB_TypeDef *USBx, uint8_t *pbUsrBuf, uint16_t wPMABufAddr, uint16_t wNBytes)
-{
-  uint32_t n = (uint32_t)wNBytes >> 1;
-  uint32_t BaseAddr = (uint32_t)USBx;
-  uint32_t i, temp;
-  __IO uint16_t *pdwVal;
-  uint8_t *pBuf = pbUsrBuf;
-
-  pdwVal = (__IO uint16_t *)(BaseAddr + 0x400U + ((uint32_t)wPMABufAddr * PMA_ACCESS));
-
-  for (i = n; i != 0U; i--)
-  {
-    temp = *(__IO uint16_t *)pdwVal;
-    pdwVal++;
-    *pBuf = (uint8_t)((temp >> 0) & 0xFFU);
-    pBuf++;
-    *pBuf = (uint8_t)((temp >> 8) & 0xFFU);
-    pBuf++;
-
-#if PMA_ACCESS > 1U
-    pdwVal++;
-#endif
-  }
-
-  if ((wNBytes % 2U) != 0U)
-  {
-    temp = *pdwVal;
-    *pBuf = (uint8_t)((temp >> 0) & 0xFFU);
-  }
 }
 
 

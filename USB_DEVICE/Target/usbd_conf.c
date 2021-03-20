@@ -133,8 +133,8 @@ uint8_t USBD_LL_IsStallEP(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
 
 USBD_StatusTypeDef USBD_LL_SetUSBAddress(USBD_HandleTypeDef *pdev, uint8_t dev_addr)
 {
-  USB_PCD_SetAddress(dev_addr);
-  return HAL_OK;
+	USB_PCD_SetAddress(dev_addr);
+	return HAL_OK;
 }
 
 USBD_StatusTypeDef USBD_LL_Transmit(USBD_HandleTypeDef *pdev, uint8_t ep_addr, uint8_t *pbuf, uint16_t size)

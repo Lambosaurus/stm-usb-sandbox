@@ -255,7 +255,7 @@ HAL_StatusTypeDef HAL_PCD_EP_Open(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, uint
   }
 
   __HAL_LOCK(hpcd);
-  (void)USB_ActivateEndpoint(hpcd->Instance, ep);
+  USB_EP_Activate(ep);
   __HAL_UNLOCK(hpcd);
 
   return ret;
@@ -278,7 +278,7 @@ HAL_StatusTypeDef HAL_PCD_EP_Close(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
   ep->num   = ep_addr & EP_ADDR_MSK;
 
   __HAL_LOCK(hpcd);
-  (void)USB_DeactivateEndpoint(hpcd->Instance, ep);
+  USB_EP_Deactivate(ep);
   __HAL_UNLOCK(hpcd);
   return HAL_OK;
 }

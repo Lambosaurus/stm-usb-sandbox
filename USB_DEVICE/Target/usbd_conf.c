@@ -35,13 +35,6 @@ void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd)
   USBD_LL_SOF((USBD_HandleTypeDef*)hpcd->pData);
 }
 
-void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
-{
-  USBD_SpeedTypeDef speed = USBD_SPEED_FULL;
-  USBD_LL_SetSpeed((USBD_HandleTypeDef*)hpcd->pData, speed);
-  USBD_LL_Reset((USBD_HandleTypeDef*)hpcd->pData);
-}
-
 void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
 {
   /* Inform USB library that core enters in suspend Mode. */

@@ -267,44 +267,6 @@ USBD_StatusTypeDef USBD_LL_DataInStage(USBD_HandleTypeDef *pdev,
   return USBD_OK;
 }
 
-
-USBD_StatusTypeDef USBD_LL_Reset(USBD_HandleTypeDef *pdev)
-{
-  /* Open EP0 OUT */
-  USBD_LL_OpenEP(pdev, 0x00U, USBD_EP_TYPE_CTRL, USB_MAX_EP0_SIZE);
-  pdev->ep_out[0x00U & 0xFU].is_used = 1U;
-
-  pdev->ep_out[0].maxpacket = USB_MAX_EP0_SIZE;
-
-  /* Open EP0 IN */
-  USBD_LL_OpenEP(pdev, 0x80U, USBD_EP_TYPE_CTRL, USB_MAX_EP0_SIZE);
-  pdev->ep_in[0x80U & 0xFU].is_used = 1U;
-
-  pdev->ep_in[0].maxpacket = USB_MAX_EP0_SIZE;
-
-  /* Upon Reset call user call back */
-  pdev->dev_state = USBD_STATE_DEFAULT;
-  pdev->ep0_state = USBD_EP0_IDLE;
-  pdev->dev_config = 0U;
-  pdev->dev_remote_wakeup = 0U;
-
-  if (pdev->pClassData)
-  {
-    pdev->pClass->DeInit(pdev, (uint8_t)pdev->dev_config);
-  }
-
-  return USBD_OK;
-}
-
-USBD_StatusTypeDef USBD_LL_SetSpeed(USBD_HandleTypeDef *pdev,
-                                    USBD_SpeedTypeDef speed)
-{
-  pdev->dev_speed = speed;
-
-  return USBD_OK;
-}
-
-
 USBD_StatusTypeDef USBD_LL_Suspend(USBD_HandleTypeDef *pdev)
 {
   pdev->dev_old_state =  pdev->dev_state;

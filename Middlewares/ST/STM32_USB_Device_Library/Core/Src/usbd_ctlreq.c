@@ -607,7 +607,6 @@ static void USBD_SetAddress(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
     else
     {
       pdev->dev_address = dev_addr;
-      //USBD_LL_SetUSBAddress(pdev, dev_addr);
       USB_PCD_SetAddress(dev_addr);
       USBD_CtlSendStatus(pdev);
 

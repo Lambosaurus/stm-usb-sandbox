@@ -176,11 +176,6 @@ __weak void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
   UNUSED(epnum);
 }
 
-__weak void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
-{
-  UNUSED(hpcd);
-}
-
 __weak void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd)
 {
   UNUSED(hpcd);
@@ -223,66 +218,6 @@ __weak void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd)
   UNUSED(hpcd);
 }
 
-HAL_StatusTypeDef HAL_PCD_EP_Open(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, uint16_t ep_mps, uint8_t ep_type)
-{
-  HAL_StatusTypeDef  ret = HAL_OK;
-  PCD_EPTypeDef *ep;
-
-  if ((ep_addr & 0x80U) == 0x80U)
-  {
-    ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 1U;
-  }
-  else
-  {
-    ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 0U;
-  }
-
-  ep->num = ep_addr & EP_ADDR_MSK;
-  ep->maxpacket = ep_mps;
-  ep->type = ep_type;
-
-  if (ep->is_in != 0U)
-  {
-    /* Assign a Tx FIFO */
-    ep->tx_fifo_num = ep->num;
-  }
-  /* Set initial data PID. */
-  if (ep_type == EP_TYPE_BULK)
-  {
-    ep->data_pid_start = 0U;
-  }
-
-  __HAL_LOCK(hpcd);
-  USB_EP_Activate(ep);
-  __HAL_UNLOCK(hpcd);
-
-  return ret;
-}
-
-HAL_StatusTypeDef HAL_PCD_EP_Close(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
-{
-  PCD_EPTypeDef *ep;
-
-  if ((ep_addr & 0x80U) == 0x80U)
-  {
-    ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 1U;
-  }
-  else
-  {
-    ep = &hpcd->OUT_ep[ep_addr & EP_ADDR_MSK];
-    ep->is_in = 0U;
-  }
-  ep->num   = ep_addr & EP_ADDR_MSK;
-
-  __HAL_LOCK(hpcd);
-  USB_EP_Deactivate(ep);
-  __HAL_UNLOCK(hpcd);
-  return HAL_OK;
-}
-
 HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, uint8_t *pBuf, uint32_t len)
 {
   PCD_EPTypeDef *ep;
@@ -294,38 +229,6 @@ HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, u
   ep->xfer_len = len;
   ep->xfer_count = 0U;
   ep->is_in = 0U;
-  ep->num = ep_addr & EP_ADDR_MSK;
-
-  if ((ep_addr & EP_ADDR_MSK) == 0U)
-  {
-    (void)USB_EP0StartXfer(hpcd->Instance, ep);
-  }
-  else
-  {
-    (void)USB_EPStartXfer(hpcd->Instance, ep);
-  }
-
-  return HAL_OK;
-}
-
-uint32_t HAL_PCD_EP_GetRxCount(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
-{
-  return hpcd->OUT_ep[ep_addr & EP_ADDR_MSK].xfer_count;
-}
-
-HAL_StatusTypeDef HAL_PCD_EP_Transmit(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, uint8_t *pBuf, uint32_t len)
-{
-  PCD_EPTypeDef *ep;
-
-  ep = &hpcd->IN_ep[ep_addr & EP_ADDR_MSK];
-
-  /*setup and start the Xfer */
-  ep->xfer_buff = pBuf;
-  ep->xfer_len = len;
-  ep->xfer_fill_db = 1U;
-  ep->xfer_len_db = len;
-  ep->xfer_count = 0U;
-  ep->is_in = 1U;
   ep->num = ep_addr & EP_ADDR_MSK;
 
   if ((ep_addr & EP_ADDR_MSK) == 0U)

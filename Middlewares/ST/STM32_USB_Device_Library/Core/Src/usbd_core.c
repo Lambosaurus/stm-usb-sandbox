@@ -1,88 +1,7 @@
 
 #include "usbd_core.h"
 
-USBD_StatusTypeDef USBD_Init(USBD_HandleTypeDef *pdev,
-                             USBD_DescriptorsTypeDef *pdesc, uint8_t id)
-{
-  /* Check whether the USB Host handle is valid */
-  if (pdev == NULL)
-  {
-#if (USBD_DEBUG_LEVEL > 1U)
-    USBD_ErrLog("Invalid Device handle");
-#endif
-    return USBD_FAIL;
-  }
 
-  /* Unlink previous class*/
-  if (pdev->pClass != NULL)
-  {
-    pdev->pClass = NULL;
-  }
-
-  /* Assign USBD Descriptors */
-  if (pdesc != NULL)
-  {
-    pdev->pDesc = pdesc;
-  }
-
-  /* Set Device initial State */
-  pdev->dev_state = USBD_STATE_DEFAULT;
-  pdev->id = id;
-  /* Initialize low level driver */
-  USBD_LL_Init(pdev);
-
-  return USBD_OK;
-}
-
-USBD_StatusTypeDef USBD_DeInit(USBD_HandleTypeDef *pdev)
-{
-  /* Set Default State */
-  pdev->dev_state = USBD_STATE_DEFAULT;
-
-  /* Free Class Resources */
-  pdev->pClass->DeInit(pdev, (uint8_t)pdev->dev_config);
-
-  /* Stop the low level driver  */
-  USBD_LL_Stop(pdev);
-
-  /* Initialize low level driver */
-  USBD_LL_DeInit(pdev);
-
-  return USBD_OK;
-}
-
-/**
-  * @brief  USBD_Start
-  *         Start the USB Device Core.
-  * @param  pdev: Device Handle
-  * @retval USBD Status
-  */
-USBD_StatusTypeDef  USBD_Start(USBD_HandleTypeDef *pdev)
-{
-  /* Start the low level driver  */
-  USBD_LL_Start(pdev);
-
-  return USBD_OK;
-}
-
-USBD_StatusTypeDef  USBD_Stop(USBD_HandleTypeDef *pdev)
-{
-  /* Free Class Resources */
-  pdev->pClass->DeInit(pdev, (uint8_t)pdev->dev_config);
-
-  /* Stop the low level driver */
-  USBD_LL_Stop(pdev);
-
-  return USBD_OK;
-}
-
-USBD_StatusTypeDef  USBD_RunTestMode(USBD_HandleTypeDef  *pdev)
-{
-  /* Prevent unused argument compilation warning */
-  UNUSED(pdev);
-
-  return USBD_OK;
-}
 
 USBD_StatusTypeDef USBD_SetClassConfig(USBD_HandleTypeDef  *pdev, uint8_t cfgidx)
 {
@@ -104,37 +23,6 @@ USBD_StatusTypeDef USBD_ClrClassConfig(USBD_HandleTypeDef  *pdev, uint8_t cfgidx
 {
   /* Clear configuration  and De-initialize the Class process*/
   pdev->pClass->DeInit(pdev, cfgidx);
-
-  return USBD_OK;
-}
-
-
-USBD_StatusTypeDef USBD_LL_SetupStage(USBD_HandleTypeDef *pdev, uint8_t *psetup)
-{
-  USBD_ParseSetupRequest(&pdev->request, psetup);
-
-  pdev->ep0_state = USBD_EP0_SETUP;
-
-  pdev->ep0_data_len = pdev->request.wLength;
-
-  switch (pdev->request.bmRequest & 0x1FU)
-  {
-    case USB_REQ_RECIPIENT_DEVICE:
-      USBD_StdDevReq(pdev, &pdev->request);
-      break;
-
-    case USB_REQ_RECIPIENT_INTERFACE:
-      USBD_StdItfReq(pdev, &pdev->request);
-      break;
-
-    case USB_REQ_RECIPIENT_ENDPOINT:
-      USBD_StdEPReq(pdev, &pdev->request);
-      break;
-
-    default:
-      USBD_LL_StallEP(pdev, (pdev->request.bmRequest & 0x80U));
-      break;
-  }
 
   return USBD_OK;
 }
@@ -245,12 +133,6 @@ USBD_StatusTypeDef USBD_LL_DataInStage(USBD_HandleTypeDef *pdev,
       {
         USBD_LL_StallEP(pdev, 0x80U);
       }
-    }
-
-    if (pdev->dev_test_mode == 1U)
-    {
-      USBD_RunTestMode(pdev);
-      pdev->dev_test_mode = 0U;
     }
   }
   else if ((pdev->pClass->DataIn != NULL) &&

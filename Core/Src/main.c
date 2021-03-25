@@ -7,10 +7,25 @@
 
 #include <string.h>
 
+const char * msgs[] = {
+		"One\n",
+		"Two\n",
+		"Three\n",
+		"Four\n",
+		"Five\n",
+		"Six\n",
+		"Seven\n",
+		"Eight\n",
+		"Nine\n",
+		"Zero\n",
+};
+
 int main(void)
 {
   CORE_Init();
   USB_Init();
+
+  int msgn = 0;
 
   while (1)
   {
@@ -19,7 +34,8 @@ int main(void)
 	static uint32_t tide = 0;
 	if (now - tide > 1000)
 	{
-		char * msg = "Mark\n";
+		const char * msg = msgs[msgn++];
+		if (msgn >= sizeof(msgs) / sizeof(*msgs)) { msgn = 0; }
 		USB_Tx((uint8_t *)msg, strlen(msg));
 		tide = now;
 	}

@@ -36,15 +36,15 @@ int main(void)
 	{
 		const char * msg = msgs[msgn++];
 		if (msgn >= sizeof(msgs) / sizeof(*msgs)) { msgn = 0; }
-		USB_Tx((uint8_t *)msg, strlen(msg));
+		USB_Write((uint8_t *)msg, strlen(msg));
 		tide = now;
 	}
 
 	uint8_t bfr[128];
-	uint32_t read = USB_Rx(bfr, sizeof(bfr));
+	uint32_t read = USB_Read(bfr, sizeof(bfr));
 	if (read)
 	{
-		USB_Tx(bfr, read);
+		USB_Write(bfr, read);
 	}
 
 	CORE_Idle();

@@ -164,60 +164,6 @@ HAL_StatusTypeDef HAL_PCD_Stop(PCD_HandleTypeDef *hpcd)
   return HAL_OK;
 }
 
-__weak void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
-{
-  UNUSED(hpcd);
-  UNUSED(epnum);
-}
-
-__weak void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
-{
-  UNUSED(hpcd);
-  UNUSED(epnum);
-}
-
-__weak void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd)
-{
-  UNUSED(hpcd);
-}
-
-__weak void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
-{
-  UNUSED(hpcd);
-}
-
-__weak void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
-{
-  UNUSED(hpcd);
-}
-
-__weak void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
-{
-  UNUSED(hpcd);
-}
-
-__weak void HAL_PCD_ISOOUTIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
-{
-  UNUSED(hpcd);
-  UNUSED(epnum);
-}
-
-__weak void HAL_PCD_ISOINIncompleteCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
-{
-  UNUSED(hpcd);
-  UNUSED(epnum);
-}
-
-__weak void HAL_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd)
-{
-  UNUSED(hpcd);
-}
-
-__weak void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd)
-{
-  UNUSED(hpcd);
-}
-
 HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, uint8_t *pBuf, uint32_t len)
 {
   PCD_EPTypeDef *ep;
@@ -239,15 +185,6 @@ HAL_StatusTypeDef HAL_PCD_EP_Receive(PCD_HandleTypeDef *hpcd, uint8_t ep_addr, u
   {
     (void)USB_EPStartXfer(hpcd->Instance, ep);
   }
-
-  return HAL_OK;
-}
-
-HAL_StatusTypeDef HAL_PCD_EP_Flush(PCD_HandleTypeDef *hpcd, uint8_t ep_addr)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hpcd);
-  UNUSED(ep_addr);
 
   return HAL_OK;
 }

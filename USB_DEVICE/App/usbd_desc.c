@@ -1,6 +1,6 @@
 #include "usbd_core.h"
 #include "usbd_desc.h"
-#include "usbd_conf.h"
+#include "usb/USB_CTL.h"
 
 #define USBD_VID     					1155
 #define USBD_LANGID_STRING     			1033
@@ -87,11 +87,11 @@ uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length
 {
   if(speed == 0)
   {
-    USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
+    *length = USB_CTL_ToUnicode(USBD_StrDesc, USBD_PRODUCT_STRING_FS);
   }
   else
   {
-    USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
+    *length = USB_CTL_ToUnicode(USBD_StrDesc, USBD_PRODUCT_STRING_FS);
   }
   return USBD_StrDesc;
 }
@@ -99,7 +99,7 @@ uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length
 uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
   UNUSED(speed);
-  USBD_GetString((uint8_t *)USBD_MANUFACTURER_STRING, USBD_StrDesc, length);
+  *length = USB_CTL_ToUnicode(USBD_StrDesc, USBD_MANUFACTURER_STRING);
   return USBD_StrDesc;
 }
 
@@ -115,11 +115,11 @@ uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
   if(speed == USBD_SPEED_HIGH)
   {
-    USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING_FS, USBD_StrDesc, length);
+    *length = USB_CTL_ToUnicode(USBD_StrDesc, USBD_CONFIGURATION_STRING_FS);
   }
   else
   {
-    USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING_FS, USBD_StrDesc, length);
+    *length = USB_CTL_ToUnicode(USBD_StrDesc, USBD_CONFIGURATION_STRING_FS);
   }
   return USBD_StrDesc;
 }
@@ -128,11 +128,11 @@ uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
 {
   if(speed == 0)
   {
-    USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
+    *length = USB_CTL_ToUnicode(USBD_StrDesc, USBD_INTERFACE_STRING_FS);
   }
   else
   {
-    USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
+    *length = USB_CTL_ToUnicode(USBD_StrDesc, USBD_INTERFACE_STRING_FS);
   }
   return USBD_StrDesc;
 }

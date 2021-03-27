@@ -21,12 +21,14 @@
 #ifndef __USBD_DEF_H
 #define __USBD_DEF_H
 
+#include <stdint.h>
+#include <string.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "usbd_conf.h"
 
 /** @addtogroup STM32_USBD_DEVICE_LIBRARY
   * @{
@@ -236,7 +238,7 @@ typedef struct
 /* USB Device handle structure */
 typedef struct _USBD_HandleTypeDef
 {
-  uint8_t                 id;
+  //uint8_t                 id;
   uint32_t                dev_config;
   uint32_t                dev_default_config;
   uint32_t                dev_config_status;

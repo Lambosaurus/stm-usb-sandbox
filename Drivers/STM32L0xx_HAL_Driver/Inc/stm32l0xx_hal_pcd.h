@@ -55,7 +55,7 @@ typedef struct
 {
   PCD_TypeDef             *Instance;   /*!< Register base address             */
   PCD_InitTypeDef         Init;        /*!< PCD required parameters           */
-  __IO uint8_t            USB_Address; /*!< USB Address                       */
+//  __IO uint8_t            USB_Address; /*!< USB Address                       */
   PCD_EPTypeDef           IN_ep[8];   /*!< IN endpoint parameters             */
   PCD_EPTypeDef           OUT_ep[8];  /*!< OUT endpoint parameters            */
   HAL_LockTypeDef         Lock;        /*!< PCD peripheral status             */

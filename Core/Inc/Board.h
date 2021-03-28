@@ -30,5 +30,7 @@
 //#define SPI1_PINS		    (GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5)
 //#define SPI1_AF			GPIO_AF0_SPI1
 
+#define USB_ENABLE
+#define USB_CLASS_CDC
 
 #endif /* BOARD_H */

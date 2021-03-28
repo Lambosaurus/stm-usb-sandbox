@@ -143,10 +143,12 @@ extern "C" {
 #define USBD_EP0_STATUS_OUT                             0x05U
 #define USBD_EP0_STALL                                  0x06U
 
-#define USBD_EP_TYPE_CTRL                               0x00U
-#define USBD_EP_TYPE_ISOC                               0x01U
-#define USBD_EP_TYPE_BULK                               0x02U
-#define USBD_EP_TYPE_INTR                               0x03U
+
+#define USBD_EP_TYPE_NONE								0x00
+#define USBD_EP_TYPE_CTRL                               0x01
+#define USBD_EP_TYPE_ISOC                               0x02
+#define USBD_EP_TYPE_BULK                               0x03
+#define USBD_EP_TYPE_INTR                               0x04
 
 
 /**
@@ -210,38 +212,21 @@ typedef enum
   USBD_FAIL,
 } USBD_StatusTypeDef;
 
-/* USB Device descriptors structure */
-typedef struct
-{
-  uint8_t  *(*GetDeviceDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
-  uint8_t  *(*GetLangIDStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
-  uint8_t  *(*GetManufacturerStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
-  uint8_t  *(*GetProductStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
-  uint8_t  *(*GetSerialStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
-  uint8_t  *(*GetConfigurationStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
-  uint8_t  *(*GetInterfaceStrDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
-#if (USBD_LPM_ENABLED == 1U)
-  uint8_t  *(*GetBOSDescriptor)(USBD_SpeedTypeDef speed, uint16_t *length);
-#endif
-} USBD_DescriptorsTypeDef;
-
 /* USB Device handle structure */
 typedef struct
 {
-  uint32_t                status;
-  uint32_t                is_used;
-  uint32_t                total_length;
-  uint32_t                rem_length;
-  uint32_t                maxpacket;
+	uint32_t                total_length;
+	uint32_t                rem_length;
+	uint32_t                maxpacket;
 } USBD_EndpointTypeDef;
 
 /* USB Device handle structure */
 typedef struct _USBD_HandleTypeDef
 {
   //uint8_t                 id;
-  uint32_t                dev_config;
-  uint32_t                dev_default_config;
-  uint32_t                dev_config_status;
+  //uint32_t                dev_config;
+  //uint32_t                dev_default_config;
+  //uint32_t                dev_config_status;
   USBD_SpeedTypeDef       dev_speed;
   USBD_EndpointTypeDef    ep_in[16];
   USBD_EndpointTypeDef    ep_out[16];
@@ -249,15 +234,14 @@ typedef struct _USBD_HandleTypeDef
   uint32_t                ep0_data_len;
   uint8_t                 dev_state;
   uint8_t                 dev_old_state;
-  uint8_t                 dev_address;
+  //uint8_t                 dev_address;
   uint8_t                 dev_connection_status;
   uint8_t                 dev_test_mode;
   uint32_t                dev_remote_wakeup;
 
   USBD_SetupReqTypedef    request;
-  USBD_DescriptorsTypeDef *pDesc;
   USBD_ClassTypeDef       *pClass;
-  void                    *pClassData;
+  //void                    *pClassData;
   void                    *pUserData;
   void                    *pData;
 } USBD_HandleTypeDef;

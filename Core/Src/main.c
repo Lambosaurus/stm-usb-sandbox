@@ -29,15 +29,15 @@ int main(void)
 
 	while (1)
 	{
-		uint32_t now = HAL_GetTick();
+		uint32_t now = CORE_GetTick();
 
 		static uint32_t tide = 0;
-		if (now - tide > 250)
+		if (now - tide > 500)
 		{
+			tide = now;
 			const char * msg = msgs[msgn++];
 			if (msgn >= sizeof(msgs) / sizeof(*msgs)) { msgn = 0; }
 			USB_Write((uint8_t *)msg, strlen(msg));
-			tide = now;
 		}
 
 		uint8_t bfr[128];

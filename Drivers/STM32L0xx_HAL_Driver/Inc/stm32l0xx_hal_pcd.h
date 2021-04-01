@@ -9,16 +9,6 @@ extern "C" {
 
 #if defined (USB)
 
-
-typedef enum
-{
-  HAL_PCD_STATE_RESET   = 0x00,
-  HAL_PCD_STATE_READY   = 0x01,
-  HAL_PCD_STATE_ERROR   = 0x02,
-  HAL_PCD_STATE_BUSY    = 0x03,
-  HAL_PCD_STATE_TIMEOUT = 0x04
-} PCD_StateTypeDef;
-
 /* Device LPM suspend state */
 typedef enum
 {
@@ -28,59 +18,24 @@ typedef enum
   LPM_L3 = 0x03, /* off */
 } PCD_LPM_StateTypeDef;
 
-typedef enum
-{
-  PCD_LPM_L0_ACTIVE = 0x00, /* on */
-  PCD_LPM_L1_ACTIVE = 0x01, /* LPM L1 sleep */
-} PCD_LPM_MsgTypeDef;
-
-typedef enum
-{
-  PCD_BCD_ERROR                     = 0xFF,
-  PCD_BCD_CONTACT_DETECTION         = 0xFE,
-  PCD_BCD_STD_DOWNSTREAM_PORT       = 0xFD,
-  PCD_BCD_CHARGING_DOWNSTREAM_PORT  = 0xFC,
-  PCD_BCD_DEDICATED_CHARGING_PORT   = 0xFB,
-  PCD_BCD_DISCOVERY_COMPLETED       = 0x00,
-
-} PCD_BCD_MsgTypeDef;
-
-
-
 typedef USB_TypeDef        PCD_TypeDef;
-typedef USB_CfgTypeDef     PCD_InitTypeDef;
 typedef USB_EPTypeDef      PCD_EPTypeDef;
 
 typedef struct
 {
-  PCD_TypeDef             *Instance;   /*!< Register base address             */
-  PCD_InitTypeDef         Init;        /*!< PCD required parameters           */
-//  __IO uint8_t            USB_Address; /*!< USB Address                       */
   PCD_EPTypeDef           IN_ep[8];   /*!< IN endpoint parameters             */
   PCD_EPTypeDef           OUT_ep[8];  /*!< OUT endpoint parameters            */
-  HAL_LockTypeDef         Lock;        /*!< PCD peripheral status             */
-  __IO PCD_StateTypeDef   State;       /*!< PCD communication state           */
-  __IO  uint32_t          ErrorCode;   /*!< PCD Error code                    */
-//  uint32_t                Setup[12];   /*!< Setup packet buffer               */
-  PCD_LPM_StateTypeDef    LPM_State;   /*!< LPM State                         */
-  uint32_t                BESL;
+//HAL_LockTypeDef         Lock;        /*!< PCD peripheral status             */
+//__IO PCD_StateTypeDef   State;       /*!< PCD communication state           */
+//  __IO  uint32_t          ErrorCode;   /*!< PCD Error code                    */
+//PCD_LPM_StateTypeDef    LPM_State;   /*!< LPM State                         */
+//  uint32_t                BESL;
 
-
-  uint32_t lpm_active;                 /*!< Enable or disable the Link Power Management .
-                                       This parameter can be set to ENABLE or DISABLE        */
-
-  uint32_t battery_charging_active;    /*!< Enable or disable Battery charging.
-                                       This parameter can be set to ENABLE or DISABLE        */
-  void                    *pData;      /*!< Pointer to upper stack Handler */
+//  uint32_t lpm_active;                 /*!< Enable or disable the Link Power Management .
+//  uint32_t battery_charging_active;    /*!< Enable or disable Battery charging.
 } PCD_HandleTypeDef;
 
 #include "stm32l0xx_hal_pcd_ex.h"
-
-#define PCD_SPEED_FULL               USBD_FS_SPEED
-
-#define PCD_PHY_ULPI                 1U
-#define PCD_PHY_EMBEDDED             2U
-#define PCD_PHY_UTMI                 3U
 
 
 #define __HAL_PCD_ENABLE(__HANDLE__)                                  (void)USB_EnableGlobalInt ((__HANDLE__)->Instance)
@@ -134,8 +89,6 @@ HAL_StatusTypeDef HAL_PCD_ActivateRemoteWakeup(PCD_HandleTypeDef *hpcd);
 HAL_StatusTypeDef HAL_PCD_DeActivateRemoteWakeup(PCD_HandleTypeDef *hpcd);
 
 uint32_t          HAL_PCD_EP_GetRxCount(PCD_HandleTypeDef *hpcd, uint8_t ep_addr);
-
-PCD_StateTypeDef HAL_PCD_GetState(PCD_HandleTypeDef *hpcd);
 
 
 #define USB_WAKEUP_EXTI_LINE                                          (0x1U << 18)  /*!< USB FS EXTI Line WakeUp Interrupt */
